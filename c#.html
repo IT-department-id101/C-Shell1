@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Chapter C# – Introduction, Variables, Data Types, Casting & I/O</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; padding:20px; direction:rtl; }
+.container { max-width:1200px; margin:0 auto; }
+
+.tabs { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
+.tab { padding:12px 22px; background:rgba(255,255,255,0.2); border:none; border-radius:8px; color:white; cursor:pointer; font-size:15px; font-weight:bold; transition:all 0.3s; backdrop-filter:blur(10px); }
+.tab:hover { background:rgba(255,255,255,0.3); transform:translateY(-2px); }
+.tab.active { background:white; color:#667eea; box-shadow:0 4px 15px rgba(0,0,0,0.2); }
+
+.content { display:none; }
+.content.active { display:block; animation:fadeIn 0.4s; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.example { background:white; border-radius:12px; padding:24px; margin-bottom:24px; box-shadow:0 8px 28px rgba(0,0,0,0.18); }
+.example-title { background:linear-gradient(135deg,#e0f2fe,#bae6fd); padding:14px 18px; border-radius:8px; margin-bottom:18px; font-size:17px; font-weight:bold; color:#0c4a6e; }
+
+.code-box { background:#1e1e1e; border-radius:10px; margin-bottom:18px; overflow:hidden; border:1px solid #333; display:flex; direction:ltr; position:relative; }
+.copy-btn { position:absolute; top:10px; left:10px; z-index:5; background:rgba(255,255,255,0.1); color:#d4d4d4; border:1px solid #444; border-radius:6px; padding:5px 12px; font-size:12px; font-family:'Segoe UI',sans-serif; cursor:pointer; transition:all 0.2s; direction:rtl; }
+.copy-btn:hover { background:rgba(255,255,255,0.2); color:white; }
+.copy-btn.copied { background:#22c55e; color:white; border-color:#22c55e; }
+
+.line-numbers { background:#2d2d2d; border-left:4px solid #5cb85c; padding:18px 0; min-width:42px; text-align:center; font-family:'Consolas','Monaco',monospace; font-size:15px; color:#858585; line-height:1.7; user-select:none; flex-shrink:0; }
+.line-numbers span { display:block; padding:0 8px; }
+.code-content { padding:18px 20px; overflow-x:auto; flex:1; }
+.code-content pre { margin:0; font-family:'Consolas','Monaco',monospace; line-height:1.7; white-space:pre; color:#e2e8f0; font-size:9pt; }
+
+.kw  { color:#569cd6; font-weight:700; }
+.dt  { color:#4ec9b0; font-weight:700; }
+.fn  { color:#dcdcaa; }
+.var { color:#9cdcfe; }
+.con { color:#4fc3f7; font-weight:600; }
+.num { color:#b5cea8; }
+.str { color:#ce9178; }
+.txt { color:#d4d4d4; }
+.cmt { color:#6a9955; font-style:italic; }
+
+.output-box { background:linear-gradient(135deg,#dbeafe,#bfdbfe); border:2px solid #3b82f6; border-radius:8px; padding:14px 18px; margin-bottom:18px; direction:ltr; overflow-x:auto; }
+.output-header { font-weight:bold; color:#1e40af; margin-bottom:8px; font-size:15px; direction:rtl; text-align:right; }
+.output-content { color:#1e3a8a; font-family:'Consolas',monospace; font-size:13px; line-height:1.8; direction:ltr; text-align:left; white-space:pre; }
+
+.expl-box { background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1.5px solid #fbbf24; border-right:6px solid #f59e0b; border-radius:14px; padding:22px 24px; margin-bottom:8px; direction:rtl; box-shadow:0 4px 14px rgba(245,158,11,0.10); }
+.expl-title { font-weight:800; color:#0369a1; margin-bottom:16px; font-size:16px; display:flex; align-items:center; gap:8px; border-bottom:2px dashed #fbbf24; padding-bottom:10px; }
+.expl-box ul { list-style:none; margin:0; padding:0; }
+.expl-box li { margin-bottom:13px; line-height:2; font-size:15px; color:#1c1917; padding:10px 14px; background:white; border-radius:9px; border-right:4px solid #fbbf24; display:flex; align-items:flex-start; gap:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.li-icon { font-size:17px; flex-shrink:0; margin-top:2px; }
+.li-text { flex:1; }
+.expl-box b { color:#0369a1; font-size:15px; background:#dbeafe; padding:1px 7px; border-radius:5px; font-weight:700; }
+.expl-box code { background:#1e1e1e; color:#ce9178; padding:2px 7px; border-radius:5px; font-size:12.5px; font-family:Consolas,monospace; border:1px solid #444; }
+.expl-warn { background:#fff1f2; border-right:4px solid #f43f5e !important; }
+
+.title-row { display:flex; flex-direction:row; align-items:center; gap:10px; margin-bottom:18px; direction:rtl; }
+.title-row .example-title { margin-bottom:0; flex:1; }
+.pdf-page { background:#f97316; color:white; font-size:11px; font-weight:bold; padding:5px 11px; border-radius:20px; white-space:nowrap; direction:ltr; font-family:'Segoe UI',sans-serif; flex-shrink:0; box-shadow:0 2px 6px rgba(249,115,22,0.35); order:1; margin-left:auto; }
+
+.intro { background:white; border-radius:12px; padding:30px; text-align:center; box-shadow:0 8px 28px rgba(0,0,0,0.18); }
+.intro h2 { color:#667eea; margin-bottom:18px; font-size:1.9em; }
+.intro p { color:#4b5563; font-size:1.05em; line-height:1.8; margin-bottom:14px; }
+.intro ul { text-align:right; display:inline-block; margin-top:12px; list-style:none; }
+.intro ul li { margin-bottom:10px; font-size:1.05em; color:#374151; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div style="text-align:center; color:white; margin-bottom:30px;">
+  <h1 style="font-size:2.6em; text-shadow:2px 2px 4px rgba(0,0,0,0.3); margin-bottom:10px;">💻 نموونەکانی #C</h1>
+  <h2 style="font-size:1.5em; font-weight:400; margin-bottom:8px;">– سەرەتا، گۆڕاوەکان، جۆرەکانی داتا، Casting و I/O</h2>
+  <p style="font-size:1.05em; opacity:0.9;">Introduction to Visual Programming – Chapter 1</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab(0)">دەستپێک</button>
+  <button class="tab" onclick="showTab(1)">کۆدی ١</button>
+  <button class="tab" onclick="showTab(2)">کۆدی ٢</button>
+  <button class="tab" onclick="showTab(3)">کۆدی ٣</button>
+  <button class="tab" onclick="showTab(4)">کۆدی ٤</button>
+  <button class="tab" onclick="showTab(5)">کۆدی ٥</button>
+  <button class="tab" onclick="showTab(6)">کۆدی ٦</button>
+  <button class="tab" onclick="showTab(7)">کۆدی ٧</button>
+  <button class="tab" onclick="showTab(8)">کۆدی ٨</button>
+  <button class="tab" onclick="showTab(9)">کۆدی ٩</button>
+  <button class="tab" onclick="showTab(10)">کۆدی ١٠</button>
+</div>
+
+<!-- TAB 0: Intro -->
+<div class="content active" id="tab0">
+<div class="intro">
+  <h2>🎯 بەخێربێیت بۆ #C</h2>
+  <p>لەم بەرنامەیەدا <b>١٠ نموونە</b>ی جیاوازی زمانی #C دەبینیت کە لە پەڕەکانی ١ تا ١٧ی PDFـەکەدا هاتوون.</p>
+  <p>هەر نموونەیەک لەخۆدەگرێت:</p>
+  <ul>
+    <li><span class="li-icon">📖</span><span class="li-text">🔵 سەردێڕی نموونەکە و ژمارەی پەڕەی PDF</span></li>
+    <li><span class="li-icon">📖</span><span class="li-text">🎨 کۆدی #C بە ڕەنگەکانی جیاواز و ژمارەی هێڵ</span></li>
+    <li><span class="li-icon">📖</span><span class="li-text">💻 دەرەنجامی جێبەجێکردن</span></li>
+    <li><span class="li-icon">📖</span><span class="li-text">📖 ڕوونکردنەوەی سەرەکی</span></li>
+  </ul>
+  <p style="margin-top:18px;font-weight:bold;color:#667eea;">دوگمەکانی سەرەوە هەڵبژێرە بۆ بینینی نموونەکان 👆</p>
+</div>
+</div>
+
+<!-- TAB 1: Program Structure -->
+<div class="content" id="tab1">
+<div class="example">
+  <div class="title-row"><div class="example-title">Program Structure – پێکهاتەی گشتیی بەرنامەی #C</div><span class="pdf-page">PDF P.4</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code1', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div>
+    <div class="code-content"><pre id="code1"><span class="kw">using</span> <span class="dt">System</span><span class="txt">;</span>
+<span class="kw">namespace</span> <span class="dt">MyApplication</span>
+<span class="txt">{</span>
+    <span class="kw">class</span> <span class="dt">Program</span>
+    <span class="txt">{</span>
+        <span class="kw">static</span> <span class="dt">void</span> <span class="fn">Main</span><span class="txt">(</span><span class="dt">string</span><span class="txt">[] </span><span class="var">args</span><span class="txt">)</span>
+        <span class="txt">{</span>
+            <span class="cmt">// کۆدەکە لێرە بنووسە</span>
+        <span class="txt">}</span>
+    <span class="txt">}</span>
+<span class="txt">}</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">(هیچ دەرەنجامێک نییە — تەنها پێکهاتەی بنەڕەتی بەرنامەکەیە)</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>using System; :</b> بانگهێشتکردنی System namespace — پێویستە بۆ بەکارهێنانی Console و زۆر شتی تری بنەڕەتی</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>namespace MyApplication :</b> ناوی گشتیی پڕۆژەکە — وەک بۆکسێکی گەورە هەموو کۆدەکە تێیدا کۆدەکرێتەوە</span></li>
+      <li><span class="li-icon">٣</span><span class="li-text"><b>{ :</b> کردنەوەی بلۆکی <code>namespace</code> — هەموو ئەوەی نێوان { و } دەکەوێتە ناوی</span></li>
+      <li><span class="li-icon">٤</span><span class="li-text"><b>class Program :</b> هەر بەرنامەیەکی #C پێویستی بە هەڵبژاردنی class هەیە — لێرە class ـێک بەناوی <code>Program</code> دروستکراوە</span></li>
+      <li><span class="li-icon">٥</span><span class="li-text"><b>{ :</b> کردنەوەی بلۆکی class ـەکە</span></li>
+      <li><span class="li-icon">٦</span><span class="li-text"><b>static void Main(string[] args) :</b> ئەمە میتۆدی سەرەکییە — خاڵی دەستپێکی جێبەجێکردنی بەرنامەکەیە، هەمیشە لێرەوە دەستپێدەکات</span></li>
+      <li><span class="li-icon">٧</span><span class="li-text"><b>{ :</b> کردنەوەی بلۆکی میتۆدی Main — هەموو فەرمانەکان لێرەوە دەنووسرێن</span></li>
+      <li><span class="li-icon">٨</span><span class="li-text"><b>// کۆدەکە لێرە بنووسە :</b> کۆمێنتێکە — کۆمپایلەر ئەمە جێبەجێ ناکات، تەنها شوێنی نیشاندانە بۆ نووسینی فەرمانەکان</span></li>
+      <li><span class="li-icon">٩</span><span class="li-text"><b>} :</b> داخستنی بلۆکی میتۆدی Main</span></li>
+      <li><span class="li-icon">١٠</span><span class="li-text"><b>} :</b> داخستنی بلۆکی class</span></li>
+      <li><span class="li-icon">١١</span><span class="li-text"><b>} :</b> داخستنی بلۆکی namespace — کۆتایی فایلەکە</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 2: string variable -->
+<div class="content" id="tab2">
+<div class="example">
+  <div class="title-row"><div class="example-title">Declaring a String Variable – دیاریکردنی گۆڕاوی جۆری string</div><span class="pdf-page">PDF P.6</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code2', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span></div>
+    <div class="code-content"><pre id="code2"><span class="dt">string</span> <span class="var">name</span> <span class="txt">=</span> <span class="str">"John"</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">name</span><span class="txt">);</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">John</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>string name = "John"; :</b> <code>string</code> جۆری داتایە بۆ دەق — گۆڕاوێک بەناوی <code>name</code> دروستکراوە و نرخی <code>"John"</code>ی پێدراوە</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>Console.WriteLine(name); :</b> نرخی گۆڕاوی <code>name</code> لە شاشەکەدا نیشان دەدرێت</span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>تێبینی :</b> نرخی جۆری string هەمیشە لەنێوان <code>" "</code> دادەنرێت</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 3: assign later + overwrite -->
+<div class="content" id="tab3">
+<div class="example">
+  <div class="title-row"><div class="example-title">Assign Later & Overwrite – دانانی نرخ دواتر و گۆڕینی نرخی هەبوو</div><span class="pdf-page">PDF P.6</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code3', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+    <div class="code-content"><pre id="code3"><span class="dt">int</span> <span class="var">myNum</span><span class="txt">;</span>
+<span class="var">myNum</span> <span class="txt">=</span> <span class="num">15</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">myNum</span><span class="txt">);</span> <span class="cmt">// دەرەنجام: 15</span>
+
+<span class="var">myNum</span> <span class="txt">=</span> <span class="num">20</span><span class="txt">;</span> <span class="cmt">// نرخی پێشوو دەگۆڕدرێت بۆ 20</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">myNum</span><span class="txt">);</span> <span class="cmt">// دەرەنجام: 20</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">15
+20</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>int myNum; :</b> گۆڕاوی <code>myNum</code> دروستکرا بەبێ نرخ — تەنها جۆرەکەی دیاریکراوە، هێشتا نرخی نییە</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>myNum = 15; :</b> دواتر نرخی <code>15</code> پێدراوە بە گۆڕاوەکە</span></li>
+      <li><span class="li-icon">٣</span><span class="li-text"><b>Console.WriteLine(myNum); :</b> نرخی گۆڕاوەکە چاپدەکرێت — لێرەدا <code>15</code> نیشان دەدرێت</span></li>
+      <li><span class="li-icon">٥</span><span class="li-text"><b>myNum = 20; :</b> نرخی نوێ <code>20</code> نرخی پێشووی <code>15</code> دەسڕێتەوە و دەینوێنێت — گۆڕاوەکان دەتوانرێت دووبارە نرخیان بگۆڕدرێت</span></li>
+      <li><span class="li-icon">٦</span><span class="li-text"><b>Console.WriteLine(myNum); :</b> نرخی نوێی گۆڕاوەکە چاپدەکرێت — ئێستا <code>20</code> نیشان دەدرێت، نەک <code>15</code></span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>گرنگ :</b> ئەگەر گۆڕاوێک <code>const</code> نەبێت، نرخەکەی دەتوانرێت هەر کاتێک بگۆڕدرێت</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 4: const -->
+<div class="content" id="tab4">
+<div class="example">
+  <div class="title-row"><div class="example-title">Constants – گۆڕاوی نەگۆڕ بە const</div><span class="pdf-page">PDF P.7</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code4', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span></div>
+    <div class="code-content"><pre id="code4"><span class="kw">const</span> <span class="dt">int</span> <span class="var">myNum</span> <span class="txt">=</span> <span class="num">15</span><span class="txt">;</span>
+<span class="var">myNum</span> <span class="txt">=</span> <span class="num">20</span><span class="txt">;</span> <span class="cmt">// هەڵە! ناتوانرێت بگۆڕدرێت</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">Compile Error:
+The left-hand side of an assignment must be a variable
+(ناتوانرێت نرخی گۆڕاوێکی const بگۆڕدرێت)</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>const int myNum = 15; :</b> کەلیمەی <code>const</code> پێش جۆرەکە دەنووسرێت — گۆڕاوەکە دەبێتە نەگۆڕ (constant)</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>myNum = 20; :</b> هەوڵدانی گۆڕینی نرخی گۆڕاوێکی <code>const</code> — کۆمپایلەر هەڵە دەدات چونکە ناتوانرێت</span></li>
+      <li><span class="li-icon">⚠️</span><span class="li-text"><b>تێبینی گرنگ :</b> گۆڕاوی <code>const</code> پێویستە لە هەمان کاتی دروستکردندا نرخی پێبدرێت — بەبێ نرخ ناتوانرێت دروستبکرێت</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 5: display / concat -->
+<div class="content" id="tab5">
+<div class="example">
+  <div class="title-row"><div class="example-title">Display Variables – تێکەڵکردنی دەق و گۆڕاو بە (+)</div><span class="pdf-page">PDF P.8</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code5', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+    <div class="code-content"><pre id="code5"><span class="dt">string</span> <span class="var">name</span> <span class="txt">=</span> <span class="str">"John"</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="str">"Hello "</span><span class="txt"> + </span><span class="var">name</span><span class="txt">);</span>
+
+<span class="dt">string</span> <span class="var">firstName</span> <span class="txt">=</span> <span class="str">"John "</span><span class="txt">;</span>
+<span class="dt">string</span> <span class="var">lastName</span> <span class="txt">=</span> <span class="str">"Doe"</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">firstName</span> <span class="txt">+ </span><span class="var">lastName</span><span class="txt">);</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">Hello John
+John Doe</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>string name = "John"; :</b> گۆڕاوی <code>name</code> دروستکرا بە نرخی <code>"John"</code></span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>Console.WriteLine("Hello " + name); :</b> نیشانەی <code>+</code> دەقی <code>"Hello "</code> و گۆڕاوی <code>name</code> بەیەکەوە دەبەستێت — دەرەنجام دەبێتە "Hello John"</span></li>
+      <li><span class="li-icon">٤</span><span class="li-text"><b>string firstName = "John "; :</b> گۆڕاوێکی نوێ — تێبینی بکە فاسیلەیەک لە کۆتایدا هەیە</span></li>
+      <li><span class="li-icon">٥</span><span class="li-text"><b>string lastName = "Doe"; :</b> گۆڕاوێکی دووەم بۆ ناوی کۆتایی</span></li>
+      <li><span class="li-icon">٦</span><span class="li-text"><b>Console.WriteLine(firstName + lastName); :</b> دوو گۆڕاو بەیەکەوە دەبەستێت — دەرەنجام دەبێتە "John Doe"</span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>+ لەگەڵ string :</b> کاتێک لایەکی <code>+</code> string بێت، کارەکە دەبێتە بەستنەوە (concatenation) نەک کۆکردنەوەی ژمارە</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 6: numeric + -->
+<div class="content" id="tab6">
+<div class="example">
+  <div class="title-row"><div class="example-title">Numeric Addition – کۆکردنەوەی ژمارەیی بە (+)</div><span class="pdf-page">PDF P.8-9</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code6', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span></div>
+    <div class="code-content"><pre id="code6"><span class="dt">int</span> <span class="var">x</span> <span class="txt">=</span> <span class="num">5</span><span class="txt">;</span>
+<span class="dt">int</span> <span class="var">y</span> <span class="txt">=</span> <span class="num">6</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">x</span> <span class="txt">+ </span><span class="var">y</span><span class="txt">);</span> <span class="cmt">// چاپکردنی نرخی x+y</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">11</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>int x = 5; :</b> گۆڕاوی <code>x</code> بە نرخی <code>5</code> دروستکرا</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>int y = 6; :</b> گۆڕاوی <code>y</code> بە نرخی <code>6</code> دروستکرا</span></li>
+      <li><span class="li-icon">٣</span><span class="li-text"><b>Console.WriteLine(x + y); :</b> کاتێک هەردوو لای <code>+</code> ژمارە بن، کارەکە دەبێتە کۆکردنەوەی ماتماتیکی — 5+6=11</span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>جیاوازی لەگەڵ string :</b> هەمان نیشانەی <code>+</code>، بەڵام لەگەڵ ژمارە کۆدەکات نەک بەستنەوە</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 7: multiple vars -->
+<div class="content" id="tab7">
+<div class="example">
+  <div class="title-row"><div class="example-title">Declare Many Variables – دیاریکردنی چەند گۆڕاو لە هێڵێکدا</div><span class="pdf-page">PDF P.9</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code7', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span></div>
+    <div class="code-content"><pre id="code7"><span class="dt">int</span> <span class="var">x</span> <span class="txt">=</span> <span class="num">5</span><span class="txt">,</span> <span class="var">y</span> <span class="txt">=</span> <span class="num">6</span><span class="txt">,</span> <span class="var">z</span> <span class="txt">=</span> <span class="num">50</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">x</span> <span class="txt">+ </span><span class="var">y</span> <span class="txt">+ </span><span class="var">z</span><span class="txt">);</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">61</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>int x=5, y=6, z=50; :</b> سێ گۆڕاوی هەمان جۆر بە کۆما لەیەکتر جیاکراونەتەوە — لە هێڵێکدا دروستکراون</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>x + y + z :</b> 5+6+50 = 61</span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>کاتی بەکارهێنان :</b> ئەم شێوازە کۆدەکە کورتتر دەکات کاتێک چەند گۆڕاوی هەمان جۆر پێویستە</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 8: booleans -->
+<div class="content" id="tab8">
+<div class="example">
+  <div class="title-row"><div class="example-title">Booleans – گۆڕاوی جۆری bool</div><span class="pdf-page">PDF P.12</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code8', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+    <div class="code-content"><pre id="code8"><span class="dt">bool</span> <span class="var">isCSharpFun</span> <span class="txt">=</span> <span class="kw">true</span><span class="txt">;</span>
+<span class="dt">bool</span> <span class="var">isFishTasty</span> <span class="txt">=</span> <span class="kw">false</span><span class="txt">;</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">isCSharpFun</span><span class="txt">);</span> <span class="cmt">// دەرەنجام: True</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">isFishTasty</span><span class="txt">);</span> <span class="cmt">// دەرەنجام: False</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">True
+False</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>bool isCSharpFun = true; :</b> گۆڕاوی جۆری <code>bool</code> بە نرخی <code>true</code></span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>bool isFishTasty = false; :</b> گۆڕاوێکی دووەمی جۆری <code>bool</code> بە نرخی <code>false</code></span></li>
+      <li><span class="li-icon">٣</span><span class="li-text"><b>Console.WriteLine(isCSharpFun); :</b> نرخی گۆڕاوەکە چاپدەکرێت — <code>True</code> (پیتی یەکەم گەورە)</span></li>
+      <li><span class="li-icon">٤</span><span class="li-text"><b>Console.WriteLine(isFishTasty); :</b> نرخی گۆڕاوەکە چاپدەکرێت — <code>False</code></span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>کاتی بەکارهێنان :</b> بۆ دیاریکردنی مەرج (ڕاست/هەڵە) بەکاردێت — بنەمای IF-statements</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 9: casting -->
+<div class="content" id="tab9">
+<div class="example">
+  <div class="title-row"><div class="example-title">Implicit & Explicit Casting – گۆڕینی خۆکار و دەستیی جۆری داتا</div><span class="pdf-page">PDF P.14</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code9', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+    <div class="code-content"><pre id="code9"><span class="dt">int</span> <span class="var">myInt</span> <span class="txt">=</span> <span class="num">9</span><span class="txt">;</span>
+<span class="dt">double</span> <span class="var">myDouble</span> <span class="txt">=</span> <span class="var">myInt</span><span class="txt">;</span> <span class="cmt">// گۆڕینی خۆکار: int بۆ double</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">myInt</span><span class="txt">);</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">myDouble</span><span class="txt">);</span>
+
+<span class="dt">double</span> <span class="var">myDouble2</span> <span class="txt">=</span> <span class="num">9.78</span><span class="txt">;</span>
+<span class="dt">int</span> <span class="var">myInt2</span> <span class="txt">=</span> <span class="txt">(</span><span class="dt">int</span><span class="txt">)</span> <span class="var">myDouble2</span><span class="txt">;</span> <span class="cmt">// گۆڕینی دەستیی: double بۆ int</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">myDouble2</span><span class="txt">);</span> <span class="cmt">// دەرەنجام: 9.78</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="var">myInt2</span><span class="txt">);</span> <span class="cmt">// دەرەنجام: 9</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">9
+9
+9.78
+9</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>int myInt = 9; :</b> گۆڕاوی جۆری <code>int</code> بە نرخی <code>9</code></span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>double myDouble = myInt; :</b> Implicit Casting — گۆڕینی خۆکار لە جۆری بچووک (int) بۆ جۆری گەورە (double)، پێویست بە هیچ نووسینێکی زیاتر نییە</span></li>
+      <li><span class="li-icon">٣</span><span class="li-text"><b>Console.WriteLine(myInt); :</b> نرخی <code>myInt</code> چاپدەکرێت — <code>9</code></span></li>
+      <li><span class="li-icon">٤</span><span class="li-text"><b>Console.WriteLine(myDouble); :</b> نرخی <code>myDouble</code> چاپدەکرێت — <code>9</code> (وەک double نیشان دەدرێت)</span></li>
+      <li><span class="li-icon">٦</span><span class="li-text"><b>double myDouble2 = 9.78; :</b> گۆڕاوێکی نوێی جۆری <code>double</code> بە نرخی <code>9.78</code></span></li>
+      <li><span class="li-icon">٧</span><span class="li-text"><b>int myInt2 = (int) myDouble2; :</b> Explicit Casting — گۆڕینی دەستیی لە جۆری گەورە (double) بۆ جۆری بچووک (int)، جۆرەکە لەناو () دادەنرێت</span></li>
+      <li><span class="li-icon">٨</span><span class="li-text"><b>Console.WriteLine(myDouble2); :</b> نرخی سەرەتایی چاپدەکرێت — <code>9.78</code>، هیچی نەگۆڕاوە</span></li>
+      <li><span class="li-icon">٩</span><span class="li-text"><b>Console.WriteLine(myInt2); :</b> کاتێک double بۆ int دەگۆڕدرێت، بەشی دوای خاڵی دەبڕدرێت — دەرەنجام دەبێتە <code>9</code> نەک <code>9.78</code></span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>ڕیزبەندی جۆرەکان :</b> char → int → long → float → double</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- TAB 10: user input -->
+<div class="content" id="tab10">
+<div class="example">
+  <div class="title-row"><div class="example-title">Get User Input – وەرگرتنی داخڵکراوی بەکارهێنەر</div><span class="pdf-page">PDF P.16-17</span></div>
+  <div class="code-box">
+    <button class="copy-btn" onclick="copyCode('code10', this)">📋 کۆپی</button>
+    <div class="line-numbers"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div>
+    <div class="code-content"><pre id="code10"><span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="str">"Enter your age:"</span><span class="txt">);</span>
+<span class="dt">int</span> <span class="var">age</span> <span class="txt">=</span> <span class="dt">Console</span><span class="txt">.</span><span class="fn">ReadLine</span><span class="txt">();</span> <span class="cmt">// هەڵە! ReadLine string دەگەڕێنێتەوە</span>
+
+<span class="cmt">// چارەسەری هەڵەکە:</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="str">"Enter your age:"</span><span class="txt">);</span>
+<span class="dt">int</span> <span class="var">age</span> <span class="txt">=</span> <span class="dt">Convert</span><span class="txt">.</span><span class="fn">ToInt32</span><span class="txt">(</span><span class="dt">Console</span><span class="txt">.</span><span class="fn">ReadLine</span><span class="txt">());</span> <span class="cmt">// گۆڕینی دەق بۆ ژمارە</span>
+<span class="dt">Console</span><span class="txt">.</span><span class="fn">WriteLine</span><span class="txt">(</span><span class="str">"Your age is: "</span><span class="txt"> + </span><span class="var">age</span><span class="txt">);</span></pre></div>
+  </div>
+  <div class="output-box">
+    <div class="output-header">:دەرەنجام &nbsp;|&nbsp; Output:</div>
+    <div class="output-content">-- کۆدی هەڵەدار:
+Error CS0029: Cannot implicitly convert type 'string' to 'int'
+
+-- کۆدی چاک (دوای Convert.ToInt32):
+Enter your age:
+25
+Your age is: 25</div>
+  </div>
+  <div class="expl-box">
+    <div class="expl-title"><span>📚</span> ڕوونکردنەوەی تەواو:</div>
+    <ul>
+      <li><span class="li-icon">١</span><span class="li-text"><b>Console.WriteLine("Enter your age:"); :</b> نامەیەک بۆ بەکارهێنەر نیشان دەدرێت داوای تەمەن دەکات</span></li>
+      <li><span class="li-icon">٢</span><span class="li-text"><b>int age = Console.ReadLine(); :</b> <code>Console.ReadLine()</code> هەمیشە جۆری <code>string</code> دەگەڕێنێتەوە — ناتوانرێت ڕاستەوخۆ بخرێتە ناو گۆڕاوی <code>int</code>، بۆیە هەڵە ڕوودەدات</span></li>
+      <li><span class="li-icon">٤</span><span class="li-text"><b>// چارەسەری هەڵەکە: :</b> کۆمێنتێکە — ڕوونکردنەوەیە بۆ بەشی دووەمی کۆدەکە</span></li>
+      <li><span class="li-icon">٥</span><span class="li-text"><b>Console.WriteLine("Enter your age:"); :</b> هەمان نامە دووبارە نیشان دەدرێت لە کۆدی چاککراودا</span></li>
+      <li><span class="li-icon">٦</span><span class="li-text"><b>int age = Convert.ToInt32(Console.ReadLine()); :</b> چارەسەری هەڵەکە — تابعی <code>Convert.ToInt32()</code> دەقەکە دەگۆڕێت بۆ ژمارە پێش ئەوەی بخرێتە ناو گۆڕاوی <code>int</code></span></li>
+      <li><span class="li-icon">٧</span><span class="li-text"><b>Console.WriteLine("Your age is: " + age); :</b> دەقەکە و نرخی گۆڕاوی <code>age</code> بەیەکەوە دەبەستێت و چاپیدەکات</span></li>
+      <li><span class="li-icon">💡</span><span class="li-text"><b>تێبینی :</b> ئەگەر بەکارهێنەر دەق بنووسێت لە جێی ژمارە، هەڵەیەکی جیاواز (FormatException) ڕوودەدات</span></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+</div>
+
+<script>
+function copyCode(id, btn) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✅ کۆپی کرا';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    btn.textContent = '❌ هەڵە';
+    setTimeout(() => { btn.textContent = '📋 کۆپی'; }, 1800);
+  });
+}
+function showTab(i) {
+  document.querySelectorAll('.tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
+  document.querySelectorAll('.content').forEach((c, idx) => c.classList.toggle('active', idx === i));
+  if (i === 0) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const box = document.querySelector('#tab' + i + ' .code-box');
+  if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
