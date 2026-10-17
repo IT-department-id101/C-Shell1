@@ -43,10 +43,21 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .fb-quick{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .fb-qbtn{flex:1;min-width:140px;padding:10px 14px;border:1.5px solid #ddd6fe;background:#fff;border-radius:10px;color:#5b21b6;font-weight:700;font-size:14.5px;cursor:pointer;font-family:inherit;transition:.2s}
 .fb-qbtn:hover{background:#ede9fe;border-color:#a78bfa}
+.fb-overlay{display:none;position:fixed;inset:0;background:rgba(17,12,34,.55);z-index:200;align-items:center;justify-content:center;padding:20px}
+.fb-overlay.open{display:flex}
+.fb-dialog{background:#fff;border-radius:16px;padding:22px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.4);text-align:center}
+.fb-dialog h3{color:#5b21b6;font-size:17px;margin-bottom:14px}
+.fb-dialog .fb-qbtn{width:100%;margin-bottom:10px;text-align:center}
+.fb-dialog-cancel{width:100%;padding:10px;border:none;background:#f3f4f6;color:#4b5563;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;margin-top:4px}
 .fb-area{width:100%;min-height:84px;padding:12px 14px;border:1.5px solid #ddd6fe;border-radius:10px;font-family:inherit;font-size:14.5px;resize:vertical;color:#1c1917;box-sizing:border-box;margin-bottom:12px}
 .fb-area:focus{outline:none;border-color:#7c3aed}
 .fb-send{width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(102,126,234,.3)}
 .fb-send:hover{filter:brightness(1.07)}
+.fb-send:disabled{opacity:.6;cursor:default}
+.fb-send2{background:linear-gradient(135deg,#f97316,#ea580c);box-shadow:0 4px 12px rgba(234,88,12,.3);margin-top:10px}
+.fb-msg{margin-top:10px;text-align:center;font-size:13.5px;font-weight:700;border-radius:8px;padding:9px;display:none}
+.fb-msg.ok{display:block;background:#dcfce7;color:#166534}
+.fb-msg.err{display:block;background:#fee2e2;color:#991b1b}
 .expl-box li{flex-direction:column;align-items:flex-start;gap:6px}
 .expl-box li>span:last-child{width:100%}
 .expl-box .rng{min-width:30px;height:20px;line-height:18px;font-size:12px;padding:0 5px;border-radius:4px;margin-top:0}
@@ -117,6 +128,11 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 </div>
 <div class="pin-wrap" id="pinWrap"><span class="pin-pill" id="pinTxt">pin</span><button class="pin-fab" onclick="pinClick(0)" onpointerdown="pinDown(0)" onpointerup="pinUp(0)" onpointerleave="pinUp(0)" onpointercancel="pinUp(0)" oncontextmenu="return false" aria-label="pin"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3z"/></svg></button></div>
 <div class="pin-wrap pin2" id="pinWrap2"><span class="pin-pill" id="pinTxt2">pin</span><button class="pin-fab" onclick="pinClick(1)" onpointerdown="pinDown(1)" onpointerup="pinUp(1)" onpointerleave="pinUp(1)" onpointercancel="pinUp(1)" oncontextmenu="return false" aria-label="pin"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3z"/></svg></button></div>
+<div class="fb-overlay" id="fbOverlay" onclick="if(event.target===this)fbCloseDialog()"><div class="fb-dialog"><h3>چۆن دەتەوێت نامەکە بێت؟</h3>
+<button class="fb-qbtn" onclick="fbQuick('thanks')">🙏 سپاسگوزاری</button>
+<button class="fb-qbtn" onclick="fbQuick('suggest')">💡 پێشنیار</button>
+<button class="fb-qbtn" onclick="fbQuick('complaint')">⚠️ ڕخنە</button>
+<button class="fb-dialog-cancel" onclick="fbCloseDialog()">پاشگەزبوونەوە</button></div></div>
 <script>
 const E=[
 {"t":"String Variable – گۆڕاوی جۆری دەق","p":"PDF P.6","c":"string name = \"John\";\nConsole.WriteLine(name);","o":"John"},
@@ -214,15 +230,35 @@ function toggleMore(k,b){const o=document.getElementById('more'+k).classList.tog
 const tabs=document.getElementById('tabs'),views=document.getElementById('views');
 const n=i=>String(i).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 tabs.innerHTML=`<button class="tab active" onclick="showTab(0)">دەستپێک</button>`+E.map((_,i)=>`<button class="tab" onclick="showTab(${i+1})">کۆدی ${n(i+1)}</button>`).join('');
-const CREATOR_EMAIL='asaber2242002@gmail.com';
-function fbMail(subject,body){const u='mailto:'+CREATOR_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);window.location.href=u;}
-function fbQuick(kind){fbMail(kind==='thanks'?'سپاس بۆ ماڵپەڕەکە':'پێشنیار بۆ ماڵپەڕەکە',kind==='thanks'?'سڵاو،\n\nدەمەوێت سپاسی تۆ بکەم بۆ ئەم ماڵپەڕە باشە. زۆر سوودمەند بوو بۆ فێربوونی C#.\n\n':'سڵاو،\n\nئەم پێشنیارەم هەیە بۆ باشترکردنی ماڵپەڕەکە:\n\n');}
-function fbSend(){const t=document.getElementById('fbText').value.trim();if(!t){document.getElementById('fbText').focus();return;}fbMail('نامە لە ماڵپەڕی نموونەکانی C#',t);}
+const CREATOR_EMAIL='tanyakam0001@gmail.com';
+const FORMSPREE_URL='https://formspree.io/f/xyekorok';
+function fbShowMsg(ok,text){const m=document.getElementById('fbMsg');m.className='fb-msg '+(ok?'ok':'err');m.textContent=text;}
+async function fbSubmit(subject,body){const btn=document.getElementById('fbSendBtn');btn.disabled=true;btn.textContent='⏳ دەنێردرێت...';
+ try{
+  const res=await fetch(FORMSPREE_URL,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify({subject:subject,message:body})});
+  if(res.ok){fbShowMsg(true,'✅ نامەکەت بە سەرکەوتوویی نێردرا، سوپاس!');document.getElementById('fbText').value='';}
+  else{fbShowMsg(false,'❌ نەتوانرا نامەکە بنێردرێت. تکایە دووبارە هەوڵ بدەرەوە.');}
+ }catch(e){fbShowMsg(false,'❌ کێشەیەک لە پەیوەندیدا ڕوویدا. ئینتەرنێتەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.');}
+ btn.disabled=false;btn.textContent='📤 ناردنی نامە';}
+function fbMailto(subject,body){
+ const gmailUrl='https://mail.google.com/mail/?view=cm&fs=1&tf=1&to='+encodeURIComponent(CREATOR_EMAIL)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+ const win=window.open(gmailUrl,'_blank');
+ if(!win){window.location.href='mailto:'+CREATOR_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);}
+}
+const FB_PRESETS={thanks:['سپاس بۆ ماڵپەڕەکە','سڵاو،\n\nدەمەوێت سپاسی تۆ بکەم بۆ ئەم ماڵپەڕە باشە. زۆر سوودمەند بووم بۆ فێربوونی C#.'],suggest:['پێشنیار بۆ ماڵپەڕەکە','سڵاو،\n\nئەم پێشنیارەم هەیە بۆ باشترکردنی ماڵپەڕەکە:\n'],complaint:['ڕخنە بۆ ماڵپەڕەکە','سڵاو،\n\nڕخنەم هەیە لە ماڵپەڕەکە:\nلێرەدا بنووسە...']};
+function fbQuick(kind){const[subject,body]=FB_PRESETS[kind];fbMailto(subject,body);fbCloseDialog();}
+function fbFill(kind){const[,body]=FB_PRESETS[kind];const ta=document.getElementById('fbText');ta.value=body;ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+function fbOpenDialog(){document.getElementById('fbOverlay').classList.add('open');}
+function fbCloseDialog(){document.getElementById('fbOverlay').classList.remove('open');}
+function fbSendDirect(){const t=document.getElementById('fbText').value.trim();if(!t){document.getElementById('fbText').focus();return;}fbSubmit('نامە لە ماڵپەڕی نموونەکانی C#',t);}
+function fbSendEmail(){const t=document.getElementById('fbText').value.trim();if(t){fbMailto('نامە لە ماڵپەڕی نموونەکانی C#','فەرموو:\n\n'+t);}else{fbOpenDialog();}}
 views.innerHTML=`<div class="content active"><div class="intro"><h2>🎯 بەخێربێیت</h2><p>لێرەدا <b>${n(E.length)} نموونە</b>ی C# دەبینیت لە PDF ـەکەوە، لە پەڕەی ١ تا ١٧.</p><p>هەر نموونەیەک: سەردێڕ، کۆد لەگەڵ ژمارەی هێڵ، دەرەنجام و ڕوونکردنەوە.</p><p style="font-weight:bold;color:#667eea">دوگمەکانی سەرەوە هەڵبژێرە 👆</p>
 <div class="fb-box"><div class="fb-title">✉️ پەیوەندی لەگەڵ دروستکەری ماڵپەڕ</div><div class="fb-sub">سپاس یان پێشنیارێکت هەیە؟ نامەیەک بنێرە بۆ دروستکەری ئەم ماڵپەڕە.</div>
-<div class="fb-quick"><button class="fb-qbtn" onclick="fbQuick('thanks')">🙏 سپاسگوزاری</button><button class="fb-qbtn" onclick="fbQuick('suggest')">💡 پێشنیار</button></div>
-<textarea class="fb-area" id="fbText" placeholder="نامەکەت لێرە بنووسە..."></textarea>
-<button class="fb-send" onclick="fbSend()">📤 ناردنی نامە</button></div>
+<div class="fb-quick"><button class="fb-qbtn" onclick="fbFill('thanks')">🙏 سپاسگوزاری</button><button class="fb-qbtn" onclick="fbFill('suggest')">💡 پێشنیار</button></div>
+<textarea class="fb-area" id="fbText" placeholder="نامەکەت لێرە بنووسە، یان یەکێک لە دوگمەکانی سەرەوە هەڵبژێرە..."></textarea>
+<button class="fb-send" id="fbSendBtn" onclick="fbSendDirect()">📤 ناردنی نامە بە شێوەی ڕاستەوخۆ</button>
+<button class="fb-send fb-send2" onclick="fbSendEmail()">📧 ناردنی نامە بە ئیمەیل</button>
+<div class="fb-msg" id="fbMsg"></div></div>
 </div></div>`+
 E.map((e,k)=>{const L=e.c.split('\n');
 return `<div class="content"><div class="example"><div class="title-row"><div class="example-title">${e.t}</div><span class="pdf-page">${e.p}</span></div>
@@ -262,3 +298,4 @@ function showTab(i){pinReset();curTab=i;pinSync();setTimeout(pinSync,450);docume
 </script>
 </body>
 </html>
+
