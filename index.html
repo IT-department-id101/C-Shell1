@@ -37,6 +37,16 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .expl-box code{background:#1e1e1e;color:#ce9178;padding:2px 7px;border-radius:5px;font-size:13px;font-family:Consolas,monospace;direction:ltr;display:inline-block}
 .intro{background:#fff;border-radius:12px;padding:30px;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.18)}
 .intro h2{color:#667eea;margin-bottom:18px;font-size:1.9em}.intro p{color:#4b5563;line-height:1.8;margin-bottom:12px}
+.fb-box{margin-top:26px;padding:22px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:14px;text-align:right}
+.fb-title{font-weight:800;color:#5b21b6;font-size:17px;margin-bottom:6px}
+.fb-sub{color:#6b5b95;font-size:13.5px;margin-bottom:14px;line-height:1.8}
+.fb-quick{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fb-qbtn{flex:1;min-width:140px;padding:10px 14px;border:1.5px solid #ddd6fe;background:#fff;border-radius:10px;color:#5b21b6;font-weight:700;font-size:14.5px;cursor:pointer;font-family:inherit;transition:.2s}
+.fb-qbtn:hover{background:#ede9fe;border-color:#a78bfa}
+.fb-area{width:100%;min-height:84px;padding:12px 14px;border:1.5px solid #ddd6fe;border-radius:10px;font-family:inherit;font-size:14.5px;resize:vertical;color:#1c1917;box-sizing:border-box;margin-bottom:12px}
+.fb-area:focus{outline:none;border-color:#7c3aed}
+.fb-send{width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(102,126,234,.3)}
+.fb-send:hover{filter:brightness(1.07)}
 .expl-box li{flex-direction:column;align-items:flex-start;gap:6px}
 .expl-box li>span:last-child{width:100%}
 .expl-box .rng{min-width:30px;height:20px;line-height:18px;font-size:12px;padding:0 5px;border-radius:4px;margin-top:0}
@@ -82,11 +92,13 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .pin-pill{background:#fff;color:#111;font:600 15px 'Segoe UI',Tahoma,sans-serif;padding:8px 14px;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
 .pin-fab{width:58px;height:58px;border:none;border-radius:18px;background:#7c3aed;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(0,0,0,.35);cursor:pointer}
 .pin-wrap.on .pin-fab{background:#1fa855}.pin-wrap.on svg path:last-child{fill:#fff}
+.pin-wrap.full .pin-fab{box-shadow:0 0 0 4px #7c3aed,0 5px 14px rgba(0,0,0,.35)}
 .code-box.pinned.wide{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);border-radius:0;border-left:0;border-right:0}
 .pin-fab{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .code-box.pinned{position:fixed;margin:0}
 .code-box.pinned.wide{left:0;width:100vw;margin:0;border-radius:0;border-left:0;border-right:0}
 .pin2 .pin-fab{background:#dc2626}.pin2.on .pin-fab{background:#f97316}
+.pin2.full .pin-fab{box-shadow:0 0 0 4px #dc2626,0 5px 14px rgba(0,0,0,.35)}
 .code-box.pinned.dim{visibility:hidden}
 .output-box{padding:7px 12px;border-width:1.5px;border-radius:6px;margin-bottom:12px}
 .output-header{font-size:12px;margin-bottom:3px}
@@ -202,7 +214,16 @@ function toggleMore(k,b){const o=document.getElementById('more'+k).classList.tog
 const tabs=document.getElementById('tabs'),views=document.getElementById('views');
 const n=i=>String(i).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 tabs.innerHTML=`<button class="tab active" onclick="showTab(0)">دەستپێک</button>`+E.map((_,i)=>`<button class="tab" onclick="showTab(${i+1})">کۆدی ${n(i+1)}</button>`).join('');
-views.innerHTML=`<div class="content active"><div class="intro"><h2>🎯 بەخێربێیت</h2><p>لێرەدا <b>${n(E.length)} نموونە</b>ی C# دەبینیت لە PDF ـەکەوە، لە پەڕەی ١ تا ١٧.</p><p>هەر نموونەیەک: سەردێڕ، کۆد لەگەڵ ژمارەی هێڵ، دەرەنجام و ڕوونکردنەوە.</p><p style="font-weight:bold;color:#667eea">دوگمەکانی سەرەوە هەڵبژێرە 👆</p></div></div>`+
+const CREATOR_EMAIL='asaber2242002@gmail.com';
+function fbMail(subject,body){const u='mailto:'+CREATOR_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);window.location.href=u;}
+function fbQuick(kind){fbMail(kind==='thanks'?'سپاس بۆ ماڵپەڕەکە':'پێشنیار بۆ ماڵپەڕەکە',kind==='thanks'?'سڵاو،\n\nدەمەوێت سپاسی تۆ بکەم بۆ ئەم ماڵپەڕە باشە. زۆر سوودمەند بوو بۆ فێربوونی C#.\n\n':'سڵاو،\n\nئەم پێشنیارەم هەیە بۆ باشترکردنی ماڵپەڕەکە:\n\n');}
+function fbSend(){const t=document.getElementById('fbText').value.trim();if(!t){document.getElementById('fbText').focus();return;}fbMail('نامە لە ماڵپەڕی نموونەکانی C#',t);}
+views.innerHTML=`<div class="content active"><div class="intro"><h2>🎯 بەخێربێیت</h2><p>لێرەدا <b>${n(E.length)} نموونە</b>ی C# دەبینیت لە PDF ـەکەوە، لە پەڕەی ١ تا ١٧.</p><p>هەر نموونەیەک: سەردێڕ، کۆد لەگەڵ ژمارەی هێڵ، دەرەنجام و ڕوونکردنەوە.</p><p style="font-weight:bold;color:#667eea">دوگمەکانی سەرەوە هەڵبژێرە 👆</p>
+<div class="fb-box"><div class="fb-title">✉️ پەیوەندی لەگەڵ دروستکەری ماڵپەڕ</div><div class="fb-sub">سپاس یان پێشنیارێکت هەیە؟ نامەیەک بنێرە بۆ دروستکەری ئەم ماڵپەڕە.</div>
+<div class="fb-quick"><button class="fb-qbtn" onclick="fbQuick('thanks')">🙏 سپاسگوزاری</button><button class="fb-qbtn" onclick="fbQuick('suggest')">💡 پێشنیار</button></div>
+<textarea class="fb-area" id="fbText" placeholder="نامەکەت لێرە بنووسە..."></textarea>
+<button class="fb-send" onclick="fbSend()">📤 ناردنی نامە</button></div>
+</div></div>`+
 E.map((e,k)=>{const L=e.c.split('\n');
 return `<div class="content"><div class="example"><div class="title-row"><div class="example-title">${e.t}</div><span class="pdf-page">${e.p}</span></div>
 <div class="code-box"><div class="line-numbers">${L.map((_,i)=>`<span>${i+1}</span>`).join('')}</div><div class="code-content"><pre>${L.map(hl).join('\n')}</pre></div></div>
@@ -210,7 +231,7 @@ return `<div class="content"><div class="example"><div class="title-row"><div cl
 <div class="expl-box"><div class="expl-title">📚 ڕوونکردنەوە:</div><div class="walk"><span class="wl">کارەکەی ئەم کۆدە بەم شێوەیە:</span>${fx(EXSUM[k])}</div><ul>${expl(e,EX[k])}</ul></div>${moreHtml(k)}</div></div>`}).join('');
 let curTab=0,inMore=false;const PS=[{on:false,wide:false,lp:false,t:null,w:'pinWrap',x:'pinTxt'},{on:false,wide:false,lp:false,t:null,w:'pinWrap2',x:'pinTxt2'}];
 function pinBox(n){const c=document.querySelectorAll('.content')[curTab];return c&&c.querySelector(n?'#more'+(curTab-1)+' .code-box':'.example > .code-box');}
-function pinApply(n){const q=PS[n];document.getElementById(q.w).classList.toggle('on',q.on);document.getElementById(q.x).textContent=!q.on?'pin':q.wide?'pinned · full':'pinned';pinSync();}
+function pinApply(n){const q=PS[n];const w=document.getElementById(q.w);w.classList.toggle('on',q.on);w.classList.toggle('full',q.on&&q.wide);document.getElementById(q.x).textContent=!q.on?'pin':q.wide?'pinned · full':'pinned';pinSync();}
 function pinFree(b){b.classList.remove('pinned','wide');b.style.left='';b.style.width='';b.style.top='';if(b._sp){b._sp.remove();b._sp=null;}}
 function pinSync(){const w1=document.getElementById('pinWrap'),w2=document.getElementById('pinWrap2');
  if(curTab<1){w1.classList.remove('show');w2.classList.remove('show');[0,1].forEach(n=>{const b=pinBox(n);if(b)pinFree(b);});return;}
@@ -229,9 +250,9 @@ function pinSync(){const w1=document.getElementById('pinWrap'),w2=document.getEl
   else pinFree(b);});
  document.body.style.paddingTop='20px';}
 function pinClick(n){const q=PS[n];if(q.lp){q.lp=false;return;}q.on=!q.on;if(!q.on)q.wide=false;pinApply(n);}
-function pinDown(n){const q=PS[n];q.lp=false;clearTimeout(q.t);q.t=setTimeout(()=>{if(q.on){q.lp=true;q.wide=!q.wide;pinApply(n);if(navigator.vibrate)navigator.vibrate(40);}},700);}
+function pinDown(n){const q=PS[n];q.lp=false;clearTimeout(q.t);q.t=setTimeout(()=>{q.lp=true;q.on=true;q.wide=true;pinApply(n);if(navigator.vibrate)navigator.vibrate(40);},700);}
 function pinUp(n){clearTimeout(PS[n].t);}
-function pinReset(){if(curTab>=1)[0,1].forEach(n=>{const b=pinBox(n);if(b)pinFree(b);});PS.forEach(q=>{q.on=false;q.wide=false;document.getElementById(q.w).classList.remove('on');document.getElementById(q.x).textContent='pin';});}
+function pinReset(){if(curTab>=1)[0,1].forEach(n=>{const b=pinBox(n);if(b)pinFree(b);});PS.forEach(q=>{q.on=false;q.wide=false;document.getElementById(q.w).classList.remove('on','full');document.getElementById(q.x).textContent='pin';});}
 window.addEventListener('scroll',pinSync,{passive:true});window.addEventListener('resize',pinSync);
 function showTab(i){pinReset();curTab=i;pinSync();setTimeout(pinSync,450);document.querySelectorAll('.tab').forEach((t,k)=>t.classList.toggle('active',k===i));
  document.querySelectorAll('.content').forEach((c,k)=>c.classList.toggle('active',k===i));
