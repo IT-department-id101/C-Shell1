@@ -103,17 +103,28 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .pin-pill{background:#fff;color:#111;font:600 15px 'Segoe UI',Tahoma,sans-serif;padding:8px 14px;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
 .pin-fab{width:58px;height:58px;border:none;border-radius:18px;background:#7c3aed;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(0,0,0,.35);cursor:pointer}
 .pin-wrap.on .pin-fab{background:#1fa855}.pin-wrap.on svg path:last-child{fill:#fff}
-.pin-wrap.full .pin-fab{box-shadow:0 0 0 4px #7c3aed,0 5px 14px rgba(0,0,0,.35)}
 .code-box.pinned.wide{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);border-radius:0;border-left:0;border-right:0}
 .pin-fab{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .code-box.pinned{position:fixed;margin:0}
 .code-box.pinned.wide{left:0;width:100vw;margin:0;border-radius:0;border-left:0;border-right:0}
 .pin2 .pin-fab{background:#dc2626}.pin2.on .pin-fab{background:#f97316}
-.pin2.full .pin-fab{box-shadow:0 0 0 4px #dc2626,0 5px 14px rgba(0,0,0,.35)}
 .code-box.pinned.dim{visibility:hidden}
 .output-box{padding:7px 12px;border-width:1.5px;border-radius:6px;margin-bottom:12px}
 .output-header{font-size:12px;margin-bottom:3px}
 .output-content{font-size:11px;line-height:1.5}
+.pin-fab{box-sizing:border-box;outline:none;-webkit-tap-highlight-color:transparent}
+.pin-fab svg{transition:transform .2s}
+.pin-wrap.full .pin-fab{border:4px solid #7c3aed}
+.pin2.full .pin-fab{border-color:#dc2626}
+.pin-wrap.full svg{transform:rotate(45deg)}
+.pin-wrap.dock{left:0}
+.pin-wrap.dock .pin-fab{opacity:.45;transform:translateX(-32px)}
+.pin-wrap.dock .pin-pill{opacity:0;pointer-events:none}
+.pin-fab{transition:transform .2s ease,background .2s,opacity .2s}
+.pin-fab{touch-action:none;transition:transform .2s ease,background .2s}
+.pin-fab.drag{transition:none;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.pin-pill{transition:background .15s,color .15s}
+.pin-pill.hint{background:#7c3aed;color:#fff}.pin2 .pin-pill.hint{background:#dc2626}
 </style>
 </head>
 <body>
@@ -126,8 +137,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 <div class="tabs" id="tabs"></div>
 <div id="views"></div>
 </div>
-<div class="pin-wrap" id="pinWrap"><span class="pin-pill" id="pinTxt">pin</span><button class="pin-fab" onclick="pinClick(0)" onpointerdown="pinDown(0)" onpointerup="pinUp(0)" onpointerleave="pinUp(0)" onpointercancel="pinUp(0)" oncontextmenu="return false" aria-label="pin"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3z"/></svg></button></div>
-<div class="pin-wrap pin2" id="pinWrap2"><span class="pin-pill" id="pinTxt2">pin</span><button class="pin-fab" onclick="pinClick(1)" onpointerdown="pinDown(1)" onpointerup="pinUp(1)" onpointerleave="pinUp(1)" onpointercancel="pinUp(1)" oncontextmenu="return false" aria-label="pin"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3z"/></svg></button></div>
+<div class="pin-wrap" id="pinWrap"><span class="pin-pill" id="pinTxt">pin</span><button class="pin-fab" onclick="pinClick(0)" onpointerdown="pinDown(0,event)" onpointermove="pinMove(0,event)" onpointerup="pinUp(0,event)" onpointercancel="pinUp(0,event)" oncontextmenu="return false" aria-label="pin"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3z"/></svg></button></div>
+<div class="pin-wrap pin2" id="pinWrap2"><span class="pin-pill" id="pinTxt2">pin</span><button class="pin-fab" onclick="pinClick(1)" onpointerdown="pinDown(1,event)" onpointermove="pinMove(1,event)" onpointerup="pinUp(1,event)" onpointercancel="pinUp(1,event)" oncontextmenu="return false" aria-label="pin"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3z"/></svg></button></div>
 <div class="fb-overlay" id="fbOverlay" onclick="if(event.target===this)fbCloseDialog()"><div class="fb-dialog"><h3>چۆن دەتەوێت نامەکە بێت؟</h3>
 <button class="fb-qbtn" onclick="fbQuick('thanks')">🙏 سپاسگوزاری</button>
 <button class="fb-qbtn" onclick="fbQuick('suggest')">💡 پێشنیار</button>
@@ -232,18 +243,26 @@ const n=i=>String(i).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 tabs.innerHTML=`<button class="tab active" onclick="showTab(0)">دەستپێک</button>`+E.map((_,i)=>`<button class="tab" onclick="showTab(${i+1})">کۆدی ${n(i+1)}</button>`).join('');
 const CREATOR_EMAIL='tanyakam0001@gmail.com';
 const FORMSPREE_URL='https://formspree.io/f/xyekorok';
+function fbVisitorCode(){
+ try{
+  let c=localStorage.getItem('fbVisitorCode');
+  if(!c){const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';c='';for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*ch.length)];localStorage.setItem('fbVisitorCode',c);}
+  return c;
+ }catch(e){return '----';}
+}
 function fbShowMsg(ok,text){const m=document.getElementById('fbMsg');m.className='fb-msg '+(ok?'ok':'err');m.textContent=text;}
 async function fbSubmit(subject,body){const btn=document.getElementById('fbSendBtn');btn.disabled=true;btn.textContent='⏳ دەنێردرێت...';
+ const code=fbVisitorCode();
  try{
-  const res=await fetch(FORMSPREE_URL,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify({subject:subject,message:body})});
-  if(res.ok){fbShowMsg(true,'✅ نامەکەت بە سەرکەوتوویی نێردرا، سوپاس!');document.getElementById('fbText').value='';}
+  const res=await fetch(FORMSPREE_URL,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify({subject:subject,message:body,visitor_code:code})});
+  if(res.ok){fbShowMsg(true,'✅ نامەکەت بە سەرکەوتوویی نێردرا، سوپاس! (کۆدی تۆ: '+code+')');document.getElementById('fbText').value='';}
   else{fbShowMsg(false,'❌ نەتوانرا نامەکە بنێردرێت. تکایە دووبارە هەوڵ بدەرەوە.');}
  }catch(e){fbShowMsg(false,'❌ کێشەیەک لە پەیوەندیدا ڕوویدا. ئینتەرنێتەکەت بپشکنە و دووبارە هەوڵ بدەرەوە.');}
  btn.disabled=false;btn.textContent='📤 ناردنی نامە';}
 function fbMailto(subject,body){
- const gmailUrl='https://mail.google.com/mail/?view=cm&fs=1&tf=1&to='+encodeURIComponent(CREATOR_EMAIL)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
- const win=window.open(gmailUrl,'_blank');
- if(!win){window.location.href='mailto:'+CREATOR_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);}
+ const code=fbVisitorCode();
+ const su=encodeURIComponent(subject),bo=encodeURIComponent(body+'\n\n—\nکۆدی بەکارهێنەر: '+code);
+ window.location.href='mailto:'+CREATOR_EMAIL+'?subject='+su+'&body='+bo;
 }
 const FB_PRESETS={thanks:['سپاس بۆ ماڵپەڕەکە','سڵاو،\n\nدەمەوێت سپاسی تۆ بکەم بۆ ئەم ماڵپەڕە باشە. زۆر سوودمەند بووم بۆ فێربوونی C#.'],suggest:['پێشنیار بۆ ماڵپەڕەکە','سڵاو،\n\nئەم پێشنیارەم هەیە بۆ باشترکردنی ماڵپەڕەکە:\n'],complaint:['ڕخنە بۆ ماڵپەڕەکە','سڵاو،\n\nڕخنەم هەیە لە ماڵپەڕەکە:\nلێرەدا بنووسە...']};
 function fbQuick(kind){const[subject,body]=FB_PRESETS[kind];fbMailto(subject,body);fbCloseDialog();}
@@ -253,7 +272,7 @@ function fbCloseDialog(){document.getElementById('fbOverlay').classList.remove('
 function fbSendDirect(){const t=document.getElementById('fbText').value.trim();if(!t){document.getElementById('fbText').focus();return;}fbSubmit('نامە لە ماڵپەڕی نموونەکانی C#',t);}
 function fbSendEmail(){const t=document.getElementById('fbText').value.trim();if(t){fbMailto('نامە لە ماڵپەڕی نموونەکانی C#','فەرموو:\n\n'+t);}else{fbOpenDialog();}}
 views.innerHTML=`<div class="content active"><div class="intro"><h2>🎯 بەخێربێیت</h2><p>لێرەدا <b>${n(E.length)} نموونە</b>ی C# دەبینیت لە PDF ـەکەوە، لە پەڕەی ١ تا ١٧.</p><p>هەر نموونەیەک: سەردێڕ، کۆد لەگەڵ ژمارەی هێڵ، دەرەنجام و ڕوونکردنەوە.</p><p style="font-weight:bold;color:#667eea">دوگمەکانی سەرەوە هەڵبژێرە 👆</p>
-<div class="fb-box"><div class="fb-title">✉️ پەیوەندی لەگەڵ دروستکەری ماڵپەڕ</div><div class="fb-sub">سپاس یان پێشنیارێکت هەیە؟ نامەیەک بنێرە بۆ دروستکەری ئەم ماڵپەڕە.</div>
+<div class="fb-box"><div class="fb-title">✉️ پەیوەندی لەگەڵ دروستکەری ماڵپەڕ</div><div class="fb-sub">سپاس یان پێشنیارێکت هەیە؟ نامەیەک بنێرە بۆ دروستکەری ئەم ماڵپەڕە.<br>کۆدی تایبەت بە تۆ: <b style="color:#5b21b6">${fbVisitorCode()}</b> (هەموو نامەکانت بەم کۆدە دەناسرێنەوە)</div>
 <div class="fb-quick"><button class="fb-qbtn" onclick="fbFill('thanks')">🙏 سپاسگوزاری</button><button class="fb-qbtn" onclick="fbFill('suggest')">💡 پێشنیار</button></div>
 <textarea class="fb-area" id="fbText" placeholder="نامەکەت لێرە بنووسە، یان یەکێک لە دوگمەکانی سەرەوە هەڵبژێرە..."></textarea>
 <button class="fb-send" id="fbSendBtn" onclick="fbSendDirect()">📤 ناردنی نامە بە شێوەی ڕاستەوخۆ</button>
@@ -267,7 +286,7 @@ return `<div class="content"><div class="example"><div class="title-row"><div cl
 <div class="expl-box"><div class="expl-title">📚 ڕوونکردنەوە:</div><div class="walk"><span class="wl">کارەکەی ئەم کۆدە بەم شێوەیە:</span>${fx(EXSUM[k])}</div><ul>${expl(e,EX[k])}</ul></div>${moreHtml(k)}</div></div>`}).join('');
 let curTab=0,inMore=false;const PS=[{on:false,wide:false,lp:false,t:null,w:'pinWrap',x:'pinTxt'},{on:false,wide:false,lp:false,t:null,w:'pinWrap2',x:'pinTxt2'}];
 function pinBox(n){const c=document.querySelectorAll('.content')[curTab];return c&&c.querySelector(n?'#more'+(curTab-1)+' .code-box':'.example > .code-box');}
-function pinApply(n){const q=PS[n];const w=document.getElementById(q.w);w.classList.toggle('on',q.on);w.classList.toggle('full',q.on&&q.wide);document.getElementById(q.x).textContent=!q.on?'pin':q.wide?'pinned · full':'pinned';pinSync();}
+function pinApply(n){const q=PS[n],w=document.getElementById(q.w);w.classList.toggle('on',q.on);w.classList.toggle('full',q.on&&q.wide);w.classList.toggle('dock',!!q.dock);document.getElementById(q.x).textContent=!q.on?'pin':q.wide?'pinned · full':'pinned';pinSync();}
 function pinFree(b){b.classList.remove('pinned','wide');b.style.left='';b.style.width='';b.style.top='';if(b._sp){b._sp.remove();b._sp=null;}}
 function pinSync(){const w1=document.getElementById('pinWrap'),w2=document.getElementById('pinWrap2');
  if(curTab<1){w1.classList.remove('show');w2.classList.remove('show');[0,1].forEach(n=>{const b=pinBox(n);if(b)pinFree(b);});return;}
@@ -285,10 +304,23 @@ function pinSync(){const w1=document.getElementById('pinWrap'),w2=document.getEl
    b.style.top=Math.min(0,cr.bottom-b.offsetHeight)+'px';}
   else pinFree(b);});
  document.body.style.paddingTop='20px';}
-function pinClick(n){const q=PS[n];if(q.lp){q.lp=false;return;}q.on=!q.on;if(!q.on)q.wide=false;pinApply(n);}
-function pinDown(n){const q=PS[n];q.lp=false;clearTimeout(q.t);q.t=setTimeout(()=>{q.lp=true;q.on=true;q.wide=true;pinApply(n);if(navigator.vibrate)navigator.vibrate(40);},700);}
-function pinUp(n){clearTimeout(PS[n].t);}
-function pinReset(){if(curTab>=1)[0,1].forEach(n=>{const b=pinBox(n);if(b)pinFree(b);});PS.forEach(q=>{q.on=false;q.wide=false;document.getElementById(q.w).classList.remove('on','full');document.getElementById(q.x).textContent='pin';});}
+function pinClick(n){const q=PS[n];if(q.lp){q.lp=false;return;}if(q.dock){q.dock=false;pinApply(n);return;}q.on=!q.on;if(!q.on)q.wide=false;pinApply(n);}
+function pinDown(n,e){const q=PS[n];q.lp=false;q.mv=false;q.dir='';clearTimeout(q.t);q.x0=e.clientX;q.y0=e.clientY;q.dr=true;
+ try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}
+ q.t=setTimeout(()=>{q.lp=true;q.dr=false;q.dock=false;if(!q.on){q.on=true;q.wide=true;}else q.wide=!q.wide;pinApply(n);if(navigator.vibrate)navigator.vibrate(40);},700);}
+function pinMove(n,e){const q=PS[n];if(!q.dr)return;const dx=e.clientX-q.x0,dy=e.clientY-q.y0;
+ if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
+ clearTimeout(q.t);q.mv=true;
+ const b=e.currentTarget,w=document.getElementById(q.w),tx=document.getElementById(q.x);
+ q.dir=Math.abs(dx)>=Math.abs(dy)?(dx>40?'r':''):(dy>40?'d':(dy<-40?'u':''));
+ b.classList.add('drag');b.style.transform='translate('+Math.max(0,Math.min(50,dx))+'px,'+Math.max(-50,Math.min(50,dy))+'px)';
+ w.querySelector('.pin-pill').classList.toggle('hint',!!q.dir);
+ tx.textContent=q.dir==='r'?'→ pinned · full':q.dir==='d'?'↓ pinned':q.dir==='u'?'↑ dock':(q.on?(q.wide?'pinned · full':'pinned'):'pin');}
+function pinUp(n,e){const q=PS[n];clearTimeout(q.t);if(!q.dr)return;q.dr=false;
+ const b=e.currentTarget;b.classList.remove('drag');b.style.transform='';
+ document.getElementById(q.w).querySelector('.pin-pill').classList.remove('hint');
+ if(q.mv){q.lp=true;if(q.dir==='u'){q.dock=true;if(navigator.vibrate)navigator.vibrate(30);}else if(q.dir==='r'){q.dock=false;q.on=true;q.wide=true;if(navigator.vibrate)navigator.vibrate(30);}else if(q.dir==='d'){q.dock=false;q.on=true;q.wide=false;if(navigator.vibrate)navigator.vibrate(30);}pinApply(n);}}
+function pinReset(){if(curTab>=1)[0,1].forEach(n=>{const b=pinBox(n);if(b)pinFree(b);});PS.forEach(q=>{q.on=false;q.wide=false;document.getElementById(q.w).classList.remove('on','full','dock');q.dr=false;q.dock=false;document.getElementById(q.x).textContent='pin';});}
 window.addEventListener('scroll',pinSync,{passive:true});window.addEventListener('resize',pinSync);
 function showTab(i){pinReset();curTab=i;pinSync();setTimeout(pinSync,450);document.querySelectorAll('.tab').forEach((t,k)=>t.classList.toggle('active',k===i));
  document.querySelectorAll('.content').forEach((c,k)=>c.classList.toggle('active',k===i));
@@ -298,4 +330,3 @@ function showTab(i){pinReset();curTab=i;pinSync();setTimeout(pinSync,450);docume
 </script>
 </body>
 </html>
-
